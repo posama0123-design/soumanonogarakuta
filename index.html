@@ -1,62 +1,35 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <title>お問い合わせフォーム</title>
+<!doctype html>
+<html dir="ltr" lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <title>新しいタブ</title>
     <style>
-        body { font-family: sans-serif; background: #f4f7f6; display: flex; justify-content: center; padding: 50px; }
-        .container { background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); width: 100%; max-width: 400px; }
-        h2 { text-align: center; color: #333; }
-        .field { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-size: 14px; }
-        input, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
-        textarea { height: 100px; resize: vertical; }
-        button { width: 100%; padding: 12px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
-        button:hover { background: #0056b3; }
-        .error { color: red; font-size: 12px; margin-top: 5px; display: none; }
+      body {
+        background: #FFFFFF;
+        margin: 0;
+      }
+
+      #backgroundImage {
+        border: none;
+        height: 100%;
+        pointer-events: none;
+        position: fixed;
+        top: 0;
+        visibility: hidden;
+        width: 100%;
+      }
+
+      [show-background-image] #backgroundImage {
+        visibility: visible;
+      }
     </style>
-</head>
-<body>
-
-<div class="container">
-    <h2>お問い合わせ</h2>
-    <form id="mailForm" action="send_mail.php" method="POST">
-        <div class="field">
-            <label>お名前</label>
-            <input type="text" name="name" id="name" required>
-            <p id="nameError" class="error">お名前を入力してください</p>
-        </div>
-        <div class="field">
-            <label>メールアドレス</label>
-            <input type="email" name="email" id="email" required>
-            <p id="emailError" class="error">有効なメールアドレスを入力してください</p>
-        </div>
-        <div class="field">
-            <label>内容</label>
-            <textarea name="message" id="message" required></textarea>
-        </div>
-        <button type="submit">送信する</button>
-    </form>
-</div>
-
-<script>
-    document.getElementById('mailForm').addEventListener('submit', function(e) {
-        let hasError = false;
-        const name = document.getElementById('name');
-        const email = document.getElementById('email');
-
-        if (name.value.trim() === "") {
-            document.getElementById('nameError').style.display = 'block';
-            hasError = true;
-        }
-        if (!email.value.includes('@')) {
-            document.getElementById('emailError').style.display = 'block';
-            hasError = true;
-        }
-
-        if (hasError) e.preventDefault(); // エラーがあれば送信中断
-    });
-</script>
-
-</body>
+  </head>
+  <body>
+    <iframe id="backgroundImage" src=""></iframe>
+    <ntp-app></ntp-app>
+    <script type="module" src="new_tab_page.js"></script>
+    <link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
+    <link rel="stylesheet" href="chrome://theme/colors.css?sets=ui,chrome">
+    <link rel="stylesheet" href="shared_vars.css">
+  </body>
 </html>
