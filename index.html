@@ -3,177 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Chat Editor</title>
+    <title>AI Chat Workspace</title>
     <style>
-        :root {
-            --bg-color: #f0f2f5;
-            --chat-bg: #ffffff;
-            --header-bg: #333;
-            --user-msg: #007bff;
-            --ai-msg: #f1f0f0;
-            --text-main: #2c3e50;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-
-        #app-container {
-            width: 100%;
-            max-width: 700px;
-            height: 90vh;
-            background: var(--chat-bg);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            border-radius: 8px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        header {
-            background: var(--header-bg);
-            color: white;
-            padding: 1rem;
-            font-size: 1.1rem;
-            text-align: center;
-            border-top-left-radius: 8px;
-            border-top-right-radius: 8px;
-        }
-
-        #chat-window {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .message {
-            max-width: 85%;
-            padding: 12px 16px;
-            border-radius: 20px;
-            font-size: 1rem;
-            line-height: 1.5;
-            word-wrap: break-word;
-        }
-
-        .user-message {
-            align-self: flex-end;
-            background-color: var(--user-msg);
-            color: white;
-            border-bottom-right-radius: 4px;
-        }
-
-        .ai-message {
-            align-self: flex-start;
-            background-color: var(--ai-msg);
-            color: var(--text-main);
-            border-bottom-left-radius: 4px;
-        }
-
-        footer {
-            padding: 20px;
-            background: #fff;
-            border-top: 1px solid #eee;
-            display: flex;
-            gap: 10px;
-            border-bottom-left-radius: 8px;
-            border-bottom-right-radius: 8px;
-        }
-
-        input {
-            flex: 1;
-            padding: 12px 18px;
-            border: 1px solid #ddd;
-            border-radius: 30px;
-            outline: none;
-            font-size: 1rem;
-        }
-
-        button {
-            background: var(--header-bg);
-            color: white;
-            border: none;
-            padding: 0 25px;
-            border-radius: 30px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        button:hover { opacity: 0.9; }
+        body { font-family: sans-serif; background: #f4f4f9; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        #app { width: 95%; max-width: 600px; height: 85vh; background: white; display: flex; flex-direction: column; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); overflow: hidden; }
+        header { background: #2c3e50; color: white; padding: 15px; text-align: center; font-weight: bold; }
+        #chat-log { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; background: #fafafa; }
+        .msg { padding: 12px 16px; border-radius: 18px; max-width: 85%; line-height: 1.5; font-size: 15px; }
+        .user { align-self: flex-end; background: #3498db; color: white; border-bottom-right-radius: 2px; }
+        .ai { align-self: flex-start; background: #ecf0f1; color: #333; border-bottom-left-radius: 2px; }
+        .error { background: #f8d7da; color: #721c24; align-self: center; font-size: 13px; border-radius: 5px; }
+        footer { padding: 15px; border-top: 1px solid #ddd; display: flex; gap: 10px; background: white; }
+        input { flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 25px; outline: none; }
+        button { padding: 10px 20px; background: #2c3e50; color: white; border: none; border-radius: 25px; cursor: pointer; font-weight: bold; }
+        button:hover { background: #34495e; }
     </style>
 </head>
 <body>
 
-<div id="app-container">
-    <header>AI Chat Console</header>
-    <div id="chat-window">
-        <div class="message ai-message">準備ができました。メッセージをどうぞ！</div>
+<div id="app">
+    <header>AI Chat Workspace</header>
+    <div id="chat-log">
+        <div class="msg ai">準備完了です。何か入力してみてください！</div>
     </div>
     <footer>
-        <input type="text" id="user-input" placeholder="メッセージを入力...">
-        <button id="send-btn">送信</button>
+        <input type="text" id="input" placeholder="メッセージを入力...">
+        <button id="send">送信</button>
     </footer>
 </div>
 
 <script>
-    const chatWindow = document.getElementById('chat-window');
-    const userInput = document.getElementById('user-input');
-    const sendBtn = document.getElementById('send-btn');
+    const log = document.getElementById('chat-log');
+    const input = document.getElementById('input');
+    const btn = document.getElementById('send');
 
-    // さきほどのAPIキーを設定してください
-    const API_KEY = 'YOUR_API_KEY'; 
-    const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
+    // HTMLエディターさんの最新キーを使用
+    const KEY = 'AIzaSyB9paPY_tibbo0gBdfxFFzZWUELS3y4uy0';
+    // エンドポイントとモデル名を最も標準的なものに修正
+    const URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${KEY}`;
 
-    function addMessage(text, isUser) {
-        const msgDiv = document.createElement('div');
-        msgDiv.className = `message ${isUser ? 'user-message' : 'ai-message'}`;
-        msgDiv.textContent = text;
-        chatWindow.appendChild(msgDiv);
-        chatWindow.scrollTop = chatWindow.scrollHeight;
+    function addMsg(txt, type) {
+        const d = document.createElement('div');
+        d.className = `msg ${type}`;
+        d.textContent = txt;
+        log.appendChild(d);
+        log.scrollTop = log.scrollHeight;
+        return d;
     }
 
-    async function getAIResponse(prompt) {
+    async function talk() {
+        const val = input.value.trim();
+        if(!val) return;
+
+        addMsg(val, 'user');
+        input.value = '';
+
+        const loading = addMsg('考え中...', 'ai');
+
         try {
-            const response = await fetch(API_URL, {
+            const res = await fetch(URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    contents: [{ parts: [{ text: prompt }] }]
+                    contents: [{ parts: [{ text: val }] }]
                 })
             });
-            const data = await response.json();
-            return data.candidates[0].content.parts[0].text;
-        } catch (error) {
-            return "エラーが発生しました。接続を確認してください。";
+
+            const data = await res.json();
+            
+            if (res.ok && data.candidates && data.candidates[0].content) {
+                loading.textContent = data.candidates[0].content.parts[0].text;
+            } else {
+                // エラー内容を詳しく表示
+                const errorMsg = data.error ? data.error.message : "不明なエラー";
+                loading.textContent = "";
+                loading.classList.remove('ai');
+                loading.classList.add('error');
+                loading.textContent = `エラーが発生しました: ${errorMsg}`;
+                console.error("API Error Response:", data);
+            }
+        } catch (e) {
+            loading.textContent = "ネットワーク接続に失敗しました。";
+            console.error("Fetch Error:", e);
         }
     }
 
-    async function handleSend() {
-        const text = userInput.value.trim();
-        if (!text) return;
-
-        addMessage(text, true);
-        userInput.value = '';
-
-        const loadingDiv = document.createElement('div');
-        loadingDiv.className = 'message ai-message';
-        loadingDiv.textContent = '...';
-        chatWindow.appendChild(loadingDiv);
-
-        const aiText = await getAIResponse(text);
-        chatWindow.removeChild(loadingDiv);
-        addMessage(aiText, false);
-    }
-
-    sendBtn.addEventListener('click', handleSend);
-    userInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleSend(); });
+    btn.onclick = talk;
+    input.onkeypress = (e) => { if(e.key === 'Enter') talk(); };
 </script>
 
 </body>
